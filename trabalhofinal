@@ -1,0 +1,906 @@
+---
+title: "Leniência ao Autoritarismo no Brasil"
+author: "Renato Beviláqua"
+date: "15/08/2021"
+output:
+  html_document:
+    df_print: paged
+subtitle: uma questão de ideologia, religião e negação de avanços sociais?
+link-figs: yes
+link-tables: yes
+subparagraph: yes
+linestretch: 1.5
+fontsize: 12pt
+link-citations: yes
+link-figures: yes
+number_sections: yes
+urlcolor: blue
+linkcolor: blue
+header-includes:
+- \usepackage[brazilian]{babel}
+- \usepackage[utf8]{inputenc}
+- \usepackage{hyperref}
+- \usepackage{pdflscape}
+- \usepackage{floatrow}
+- \floatsetup[figure]{capposition=top}
+- \floatsetup[table]{capposition=top}
+---
+
+```{r include=FALSE}
+# Carregar pacotes
+library(electionsBR)
+library(tidyverse)
+library(ggplot2)
+library(ggpubr)
+library(haven)
+library(pander)
+library(kableExtra)
+library(coefplot)
+library(sjPlot)
+library(DiagrammeR)
+
+# Open database
+
+url <- "http://datasets.americasbarometer.org/database/files/Brazil%20LAPOP%20AmericasBarometer%202019%20v1.0_W.dta"
+
+download.file(url, "banco.dta", mode = "wb")
+
+banco <- read_dta("banco.dta")
+
+theme_set(theme_bw()) # para fundo branco em todos os gráficos
+
+```
+
+## Introdução
+
+Como formamos uma opinião autoritária? Atualmente observamos a ascensao de líderes autoritários em novas e antigas democracias. Tais políticos costumam menosprezar os trabalhos do Congresso Nacional e do Supremo Tribunal Federal e também a apoiar golpes militares em situações nas quais há muito crime e corrupção (Lowndes, 2008). Eles tendem a se fixar na direita ideológica e a puxar a bandeira conservadora, elevando o papel da religião aos seus discursos e a negar avanços sociais, principalmente quando se referem ao gênero e à sexualidade (Norris & McGuire, 2005; Wodak & KhosraviNik, 2013).
+
+A presente pesquisa testa, portanto, se ideologia, religião e negação aos avanços sociais influenciam posicionamentos autoritários. Para a mensuração e operacionalização deste estudo foi necessária a obtenção de uma base de dados de opinião pública, a qual se escolheu a elaborada pelo *Latin American Public Opinion (LAPOP)* sobre o ano mais recente (2019). Espacialmente, escolheu-se o Brasil por ser um país onde há, desde antes das eleições de 2018, uma volta aos valores simbólicos de líderes autoritários, que culminou também na eleição do presidente Jair Bolsonaro (Santos & Tanscheit, 2019). Empiricamente, criou-se um índice de autoritarismo a partir de quatro (4) perguntas apresentadas no *survey* do LAPOP, que será testado com as outras variáveis por meio de uma regressão.
+
+Os resultados indicam que a variável mais influenciadora do modelo é a ideologia, ou seja, ser uma pessoa de direita interfere mais um posicionamento ao autoritarismo que ser religioso e cristão, ou na negação dos avanços sociais.
+
+Assim, além desta seção introdutória, o trabalho está dividido em mais outras sete: primeiro, mostra-se onde este debate está inserido e quais são as base teóricos para, em seguida, trazer os argumentos e hipóteses. Depois, a metodologia, com considerações sobre a fonte dos dados, operacionalização das variáveis e o método. Posteriormente, apresentaremos uma análise exploratória descritiva das variáveis do estudo e os resultados dos modelos testados. As conclusões e implicações da pesquisa serão identificadas logo após esta seção. Por fim, apresentaremos os testes de pressupostos dos modelos de regressão.
+
+
+## A "Nova Direita"
+
+Na França, a ascensão de Le Pen e a consequente derrota do Partido Comunista, no início do século XXI, a Europa passou por profundas manifestações contra o líder que trazia afirmações problemáticas vistas como racistas (Norris & McGuire, 2005). O reconhecimento de líderes como Le Pen não aconteceu de forma isolada, mas seguido da emergência de outros líderes com características semelhantes. Na Itália, Umberto Bossi (Wodak & KhosraviNik, 2013) e, mais recentemente, Viktor Órban, na Hungria, Donald Trump, nos Estados Unidos e Jair Bolsonaro, no Brasil, surgiram nos cenários nacionais como peças importantes da *nova direita*. 
+
+A ascensão de tais líderes necessitam de apoio popular. Existem algumas condições que favorecem tais líderes: ondas de imigração, descontentamento popular em relação aos grandes partidos, colapso religioso nas estruturas partidárias, cortes orçamentários no bem-estar social, aumento da insegurança e desemprego (Norris & McGuire, 2005). A criação de programas sociais para as camadas mais pobres da sociedade e o avanço da agenda liberal feminista (Petchesky, 1981), aumento de direitos favoráveis à comunidade LGBTQIA+ (Tremblay, 2019) também constituem pontos importantes para o aumento do apoio aos líderes da extrema direita, pois os políticos transformam-nas em medos e fomentam constantes ameaças que atingem, principalmente, as camadas mais religiosas (Norris & McGuire, 2005). No Brasil, por exemplo, é possível observar que com o aumento do debate e consequente ampliação de direitos de minorias, as camadas mais conservadoras e religiosas se oporam fortemente e agiram para indicar à população isso poderia "acabar" com a família cristã, trazendo à tona o que ficou conhecido por *ideologia de gênero* (Schibelinski, 2020). Além disso, há no país um grande descontentamento em relação PT, partido dominante nas estruturas políticas, em especial, por conta dos escândalos de corrupção e a consequente Operação Lava-Jato (Santos & Tanscheit, 2019).
+
+Não à toa, a direita no Brasil necessitou impulsionar a tomada do controle político que é concretizada pela maioria no Congresso, Presidência e Suprema Corte (Lowndes, 2008). As eleições de 2018 no país se caracterizaram pela a ascensão do Partido Social Liberal (PSL), tradicionalmente ligado à direita do espectro ideológico. Em 2014, o PSL tinha apenas um membro eleito no Congresso Nacional, mas em 2018, conseguiu eleger cinquenta e dois (52) deputados federais, enquanto que o PT tinha sessenta e nove (69) em 2014 e caiu para cinquenta e cinco (55) em 2018^[Dados disponíveis no Tribunal Superior Eleitoral (TSE) por meio do pacote de dados *electionsBR*. Mais informações disponíveis em <http://electionsbr.com>], como mostra a figura 1.
+
+
+```{r figuraptpsl, echo=FALSE, fig.align="center", fig.cap="Eleições no Brasil - Comparativo de Eleitos", fig.height=3, fig.width=5, message=FALSE, warning=FALSE}
+
+eleicoes_2014 <- candidate_fed(year = 2014)
+
+
+# filtro deputado federal - ELEITOS
+
+dep_federeal <- eleicoes_2014 %>% filter(DS_CARGO == "DEPUTADO FEDERAL",
+                                         DS_SIT_TOT_TURNO == "ELEITO" | 
+                                           DS_SIT_TOT_TURNO =="ELEITO POR MÉDIA" |
+                                           DS_SIT_TOT_TURNO == "ELEITO POR QP")
+
+# filtro PT
+eleitos_pt_PSL_2014 <- dep_federeal %>% filter(SG_PARTIDO == "PT" | SG_PARTIDO == "PSL")
+
+# grafico PT x PSL - 2014
+
+graf_2014_eleitos <- eleitos_pt_PSL_2014 %>%
+  ggplot(aes(x=reorder(factor(SG_PARTIDO), SG_PARTIDO, function(x) length(x)))) +
+  geom_bar(aes(fill=SG_PARTIDO)) +
+  labs(x="Partido",
+       y="N Eleitos",
+       title = '2014') +
+  theme(legend.position = "none")
+
+### 2018
+
+eleicoes_2018 <- candidate_fed(year = 2018)
+
+# filtro deputado federal - ELEITOS
+
+dep_federeal_2018 <- eleicoes_2018 %>% filter(DS_CARGO == "DEPUTADO FEDERAL",
+                                         DS_SIT_TOT_TURNO == "ELEITO" | 
+                                           DS_SIT_TOT_TURNO =="ELEITO POR MÉDIA" |
+                                           DS_SIT_TOT_TURNO == "ELEITO POR QP")
+
+# filtro PT
+eleitos_pt_PSL_2018 <- dep_federeal_2018 %>% filter(SG_PARTIDO == "PT" | SG_PARTIDO == "PSL")
+
+# grafico PT x PSL - 2018
+
+
+
+graf_2018_eleitos <- eleitos_pt_PSL_2018 %>%
+  ggplot(aes(x=reorder(factor(SG_PARTIDO), SG_PARTIDO, function(x) length(x)))) +
+  geom_bar(aes(fill=SG_PARTIDO)) +
+  labs(x="Partido",
+       y="N Eleitos",
+       title = '2018') +
+  theme(legend.position = "none")
+
+## Juntar as figuras
+
+fig_eleic_2014_2018 <- ggarrange(graf_2014_eleitos, graf_2018_eleitos, common.legend = FALSE)
+
+annotate_figure(fig_eleic_2014_2018, 
+                bottom = text_grob("Fonte: elaboração do autor com base no \npacote de dados electionsBR."))
+
+
+
+```
+
+Esses líderes políticos são frequentemente associados a comportamentos antidemocráticos ou autoritários porque costumam exaltar a importância da intervenção militar no país e o consequente desprezo pelo Supremo Tribunal Federal (STF) (Torres, Júnior & Brasil, 2021). Eles também são frequentemente associados à direita no espectro ideológico, à religião cristã e, concomitantemente, ao conservadorismo (Jost, Frederico & Napier, 2009). A Nova Direita, portanto, passou a encadear posições estatais mais à direita, com a economia mais conectada ao neoliberalismo, opiniões punitivas, oposições ao bem-estar social e apoio maior aos valores familiares cristãos com o intuito de concretizar uma identidade política que se opõe ao regime político existente (Lowndes, 2008). 
+
+Porém, se as eleições constituem uma via de mão dupla, na qual existe o lado da oferta, mas também o da demanda (Schumpeter, 1962), então, a ascensão destes políticos está intimamente conectada à opinião pública brasileira. Mas, como essa opinião é formada? Sabemos que o sistema eleitoral brasileiro tende a *personificar* os políticos (Mainwaring, 2018), ou seja, o apoio popular está conectado às opiniões que as pessoas têm ou simplesmente porque esses candidatos possuem um carisma diferente dos outros que atrai mais o público? Para o presente trabalho, excluímos esta última possibilidade com o intuito de testar se as opiniões dos eleitores brasileiros estão conectadas com a formação da identidade política desses líderes.
+
+O Brasil constitui um caso interessante a ser estudado porque preenche alguns dos requisitos que condicionaram a ascensão de líderes populistas e autoritários, como o descontentamento com o partido dominante, principalmente por conta dos escândalos de corrupção (Santos & Tanscheit, 2019). Entender a parte desses líderes é importante, mas uma democracia conta também com o processo eleitoral. Desse modo, a presente pesquisa busca preencher esta lacuna, buscando compreender o que motiva o apreço popular pelos símbolos autoritários.
+
+## Opinião Pública, Ideologia e Autoritarismo
+
+As opiniões são reflexos de considerações recebidas e colhidas, todas baseadas no que é importante para cada indivíduo (Zaller, 1992). A lógica é que a opinião pública funciona como um balde, que acumula informações trazidas principalmente dos discursos das elites políticas; desse modo, quando as pessoas opinam sobre algo, elas estão expressando as considerações que estão mais ao topo de "suas cabeças" (*idem*). Portanto, se os políticos formam uma identidade política, então os eleitores serão induzidos a concordar com o discurso com o intuito de formar uma opinião sobre qualquer assunto, nesse caso, de cunho político. A ideologia política é o que vai direcionar o eleitor a ser mais adepto de um discurso ou de outro.
+
+Existem seis (6) pontos que podem ser observados na distinção do espectro ideológico entre a esquerda e a direita: religião, cultura, nacionalismo, economia, diversidade e nacionalismo. Além disso, raça, gênero e igualdade são pontos que incorporam os conceitos basilares, distinguindo-os no sentido da *aceitação* ou *rejeição* da pauta (Dalton, 2010). Em relação ao primeiro pilar, a esquerda tem como foco a progressividade, mudança sistemática, que está ligada intimimamente aos protestos e oposições radicais, igualidade e solidariedade, fomentadas pelos conceitos de socialismo de comunismo (Jost, Frederico & Napier, 2009). Nesse caso, a religião, principalmente a cristã, é vista de forma negativa porque traz o pensamento da elite dominante e um afastamento das lutas sociais, especialmente no que tange às questões de gênero e sexualidade (Heywood, 2003). Nesse espectro ideológico, existe uma aproximação importante com o pensamento liberal porque este também traz a liberdade de expressão, igualdade de oportunidade e reforma social como prerrogativas do governo que deve ter o objetivo final de tornar a sociedade mais homogênea, principalmente em questões sociais e econômicas (Jost, Frederico & Napier, 2009).
+
+No outro lado do espectro ideológico, a direita traz a tradição e costumes religiosos como áreas de respeito e interesse (Dalton, 2010]). É a partir do conceito de manutenção do sistema e da religião que a direita é associada à base conservadora, porque preza pela moral, obedecimento às autoridades e exaltação dos símbolos nacionais (Evans, Heath & Lalljee, 1996), falta de alinhamento às causas sociais, negação dos avanços sociais da mulher e contra qualquer expansão dos direitos relativos à sexualidade e ao gênero (Ferreira, 2016). Um outro fator importante da direita conservadora é a valorização da presença de militares no poder, pois estes podem representar a manutenção do sistema e da ordem (Coppedge, 1997).
+
+A manutenção da ordem existente é importante para a direita conservadora (Evans, Heath & Lalljee, 1996), mas quando essa ordem começa a representar ameaças ao núcleo das duas instituições mais importantes desse espectro ideológico,a família e a religião, a *intervenção militar* passa a ser uma via que pode "salvar" a nação de um possível ataque às bases conservadoras (Johansen, 2017). É notável, portanto, que existe um apoio de pessoas conservadoras aos militares, porque estes representam a volta às tradições. Em um cenário no qual a corrupção é um fator imperativo (Shleifer & Vishny, 1993; Stokes, 2005), as conquistas sociais estão sendo ampliadas (Ferreira, 2016); Tremblay, 2019) e a igualdade de direitos civis e a liberdade representam uma ameaça (Torre, 2018), a figura autoritária militar pode representar uma forma de retorno às bases da sociedade, com a proteção da família, da Igreja e controle social, coibindo o avanço das outras camadas (Hadiz_, 2018).
+
+Ser conservador, religioso e se opor ao avanço de minorias sociais podem ser indicativos de autoritarismo. Como visto acima, pessoas religiosas e conservadoras tendem a rejeitar a luta social porque entendem que estes pontos podem representar uma ameaça à ordem e às instituições tradicionais da família e da religião (Johansen, 2017; Torre, 2018; Hadiz_, 2018). Outros fatores podem contribuir para um aumento do apoio à intervenção militar. Há uma preferência nos governos populistas e autoritários de atingir pessoas com baixa escolaridade e com menor acesso (ou interesse) à informação, porque estas não conseguem construir mecanismos de defesa perante o "bombardeamento" de informações veiculadas pelas fontes da mídia (Torre, 2018). Dessa forma, o *tipo* de acesso à informação também pode importar. Donald Trump, Viktor Órban (*idem*) e Jair Bolsonaro (Caetano, 2021) tendem a manipular o discurso para criticar a mídia e transmitir a imagem de que esta não conta a verdade dos fatos, então, um controle e uma regulação maior das informações pode ser uma prioridade de governo (Torre, 2018). Desse modo, os eleitores podem acessar menos a mídia jornalística e consomem mais conteúdos disparados diretamente do aparato estatal porque acreditam mais no que o governo; populistas e autoritários passam a priorizar mais uma "conversa direta" com sua base eleitoral através, principalmente de novas mídias sociais (*idem*), como o Facebook, Whatsapp e Twitter (Stockmann, 2019). Para os fins deste trabalho, entretanto, optou-se por descartar esta hipótese, pois os questionários são insuficientes para contabilizar isto, afinal, as perguntas elaboradas são demasiadamente simples. Para que tal hipótese fosse testada, necessitaria-se de métodos mais robustos.
+
+## Argumento e Hipótese
+
+Em um cenário no qual há avanços sociais e descontentamentos populares a respeito do partido dominante, líderes populistas emergem e adequam seus discursos para conquistar votos nas urnas eleitorais. Se o cenário apresenta um contexto liberal, então, políticos mais ligados à direita conservadora podem transformar pautas daquele espectro em formas de ameaça às duas principais instituições tradicionais, a família e a religião. E, para controlar e reestabelecer a ordem, os discursos são carregados de símbolos que fazem referências à intervenção militar como uma via importante a se refletir. Tais líderes apenas ganham espaços se as opiniões públicas estão em sintonia com este propósito.
+
+Dessa forma, se as opiniões são formadas pelo constante disparo de informações das elites políticas sob as massas eleitorais, então, os eleitores recebem essas informações e as julgam. Pode-se esperar que pessoas mais ligadas à direita e, portanto conservadoras, tenham mais disposições a apoiar questões autoritárias. Desprezo pelo Congresso Nacional, Supremo Tribunal e apoio à intervenção militar e golpes de estado são característtcas autoritárias que estas pessoas tenderiam a apoiar. Diante disso, a pergunta de pesquisa que guia esta pesquisa é: a leniência ao autoritarismo no Brasil é fomentada por fatores procedimentais? Para testar este argumento, tem-se a seguinte hipótese:
+
+*Hipótese 1: pessoas conservadoras e, portanto de direita, tendem a apoiar questões de cunho autoritário.*
+
+Diversos fatores podem também contribuir para a leniência ao autoritarismo. É provável que, por ser conservador, pessoas mais religiosas, que rejeitam avanços sociais, principalmente no tocante ao gênero e sexualidade, sejam mais dispostas a aprovar questões de cunho autoritário. Desse modo, derivam-se mais duas hipóteses:
+
+*Hipótese 2: pessoas mais religiosas tendem a apoiar questões de cunho autoritário.*
+
+*Hipótese 3: pessoas que rejeitam avanços sociais, principalmente em relação a gênero e sexualidade, tendem a apoiar questões de cunho autoritário.*
+
+## Metodologia
+
+### Dados
+
+Para testar o argumento de que pessoas religiosas, de direita e conservadoras tendem a ser favoráveis ao autoritarismo, ou intervenção militar, os dados precisam ser de opinião pública. Para tanto, existem bases de dados sobre o tema, em especial a desenvolvida pelo *Latin American Public Opinion (LAPOP)*, *survey* construído a cada dois anos. No caso dos dados para o Brasil, os anos mais recentes são 2018/2019^[O *Codebook* está disponível no seguinte endereço eletrônico: <http://datasets.americasbarometer.org/database/files/Brazil%20LAPOP%20AmericasBarometer%202019_Codebook_v1.0_W.pdf> Acesso em 10 de agosto de 2021.]. 
+
+Ao todo, para este ano, foram entrevistadas 1.498 pessoas randomizadas por região, sendo 748 homens e 750 mulheres. A base de dados contém muitas informações, então foram selecionadas algumas variáveis de interesse para a presente pesquisa. Na seção a seguir serão detalhadas quais variáveis serão incluídas no modelo.
+
+### Operacionalização das Variáreis
+
+No questionário desenvolvido pelo LAPOP^[O questionário está disponivel no seguinte endereço eletrônico: <http://datasets.americasbarometer.org/database/files/ABBra18-v11.2.7.1-Por-190322_W.pdf>. Acesso em 10 de agosto de 2021.] consta uma pergunta relevante para medir a variável dependente. Já que ser autoritário é apoiar a intervenção militar (Torres, Júnior & Brasil, 2021; Johansen, 2017), a pergunta sobre se é justificável que haja um golpe de estado por parte dos militares em situações nas quais o crime e a corrupção são dominantes, é uma melhor *proxy* para os objetivos deste trabalho. Além dessas, o LAPOP inclui mais duas perguntas sobre o apoio ao fechamento do Congresso Nacional e do Supremo Tribunal Federal. As variáveis dispõem de duas opções de resposta: "seria justificado que os militares tomassem o poder por um golpe de estado" e "não se justificaria que os militares tomassem o poder por um golpe de estado", é, portanto dicotômica. Como são duas perguntas, uma em relação ao crime e outra à corrupção, optou-se por criar um índice a partir da média de respostas desses quatro itens. A tabela 1 traz o detalhamento dessas variáveis.
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+
+vd_lapop <- data.frame("Código" = c("JC10", "JC13", "JC15A", "JC16A"),
+                                Pergunta = c("Na sua opinião, se justificaria um golpe militar diante de muito crime?", "Na sua opinião, se justificaria um golpe militar diante de muita corrupção?",
+                                      "Acredita que quando o país está enfrentando dificuldades é justificável que o presidente feche o Congresso?",
+                                      "Acredita que quando o país está enfrentando dificuldades é justificável que o presidente feche o Supremo Tribunal Federal?"), 
+                                Resposta = c("Seria justificado que os militares tomassem o poder por um golpe de estado / Não seria justificado que os militares tomassem o poder por um golpe de estado", "Seria justificado que os militares tomassem o poder por um golpe de estado / Não seria justificado que os militares tomassem o poder por um golpe de estado", "Sim, justifica-se / Não, não se justifica", "Sim, justifica-se / Não, não se justifica"))
+
+pander(vd_lapop, caption = "Questionário do LAPOP (2019) - Variável Dependente", justify=c('center'), style='grid')
+
+```
+
+No banco de dados do LAPOP os valores das respostas das variáveis é 1 e 2. Portanto, para facilitar a operacionalização do modelo, optou-se por transformá-las em 0, no qual significa que "não justifica a tomada de poder pelos militares" e 1, "se justifica a tomada de poder pelos militares". Em seguida, estas quatro variáveis foram agregadas em apenas uma pela soma dos novos valores. Desse modo, zero (0) significa uma característica menos autoritária, enquanto que quatro (4) mais autoritária.
+
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+### mudar valores 1 e 2 das variaveis dependentes
+attach(banco)
+
+#variaveis: jc10, jc13, jc15a, jc16a
+
+# 1 = seria justificado - permanece 1
+# 2 = não seria justificado - muda para 0
+
+dicotom <- banco %>% 
+  mutate(golpe_crime = case_when(jc10 == 2 ~ 0,
+                           jc10 == 1 ~ 1)) %>%
+  mutate(golpe_corrup = case_when(jc13 == 2 ~ 0,
+                                  jc13 == 1 ~ 1)) %>%
+  mutate(golpe_congresso = case_when(jc15a == 2 ~ 0,
+                                     jc15a == 1 ~ 1)) %>%
+  mutate(golpe_stf = case_when(jc16a == 2 ~ 0,
+                               jc16a == 1 ~ 1))
+
+# Soma para a formação da VD - autoritarismo
+## agregar a nova variável na base de dados
+
+dicotom$sum = rowSums(dicotom[ , c(269:272)], na.rm = T)
+names(dicotom)[names(dicotom) == 'sum'] <- 'vd_autoritarismo' # mudar o nome da variável.
+
+# nome do novo banco: dicotom
+
+```
+
+
+Para medir as variáveis independentes, a primeira sobre ideologia será utilizada a pergunta sobre simpatia a um espectro ideológico. Como não existe uma questão sobre ser conservador ou não e também porque, teoricamente, a direita está intimamente conectada com "ser conservador", as pessoas que estiveram mais à direita serão consideradas como pessoas mais conservadoras. A escala desta pergunta varia de 1 (esquerda) a 10 (direita). Poderíamos transformar esta variável em dicotômica, mas caso isso ocorresse, muita informação poderia ser perdida, visto que ideologia é um espectro. Sobre a religião, o banco de dados do LAPOP contém duas perguntas relevantes para a pesquisa, uma sobre "qual a sua religião" e a outra sobre a "frequência que vai aos cultos religiosos". Espera-se que as religiões cristãs sejam mais adeptas à intervenção militar pois, como ressaltado acima, as famílias cristãs se sentem mais "ameaçadas" com os avanços sociais e também porque os líderes religiosos no Brasil tendem a ser cristãos. Para controlar esta variável, será utilizada a segunda variável, a "frequência ao culto religioso".
+
+A terceira variável independente é sobre a negação dos avanços sociais, principalmente sobre os direitos sobre gênero e sexualidade. No questionário do LAPOP existem duas perguntas sobre o tema, sendo uma a respeito do aborto e a outra sobre apoio ao casamento civil de pessoas homossexuais. Desse modo, *negar* avanços sociais é *desaprovar* a união de pessoas do mesmo sexo e não considerar que é justificável interromper uma gravidez mesmo com a mãe em risco.
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+
+vd_lapop <- data.frame("Código" = c("Q3CN", "Q5A", "W14A", "D6"),
+                                Pergunta = c("Qual a sua religião, se tiver?", "Com que frequência o(a) sr./sra. vai à missa ou culto religioso?",
+                                      "O(A) sr./sra. acredita que se justifica a interrupção da gravidez, ou seja, um aborto, quando a saúde da mãe está em perigo?",
+                                      "O quanto o(a) sr./sra. aprova ou desaprova que casais homossexuais tenham o direito de se casar?"), 
+                                Resposta = c("Católico / Protestante Tradicional ou Evangélica não pentecostal / Outra religião oriental não cristã / Evengélica pentecostal / Religiões Tradicionais ou nativas / Espíritca kardecista / Nenhuma / Agnóstico ou ateu.", "Mais de uma vez por semana / Uma vez por semana / Uma vez por mês / Uma ou duas vezes por ano / Nunca ou quase nunca.", "Sim, justifica-se / Não, não se justifica.", "1 - Desaprova fortemente / 10 - Aprova fortemente."))
+
+pander(vd_lapop, caption = "Questionário do LAPOP (2019) - Variáveis Independentes", justify=c('center'), style='grid')
+
+```
+
+Em resumo, o argumento e a operacionalização dos conceitos segue de acordo com a figura 2.
+
+```{r message=FALSE, warning=FALSE, echo=FALSE, fig.cap='Esquema do argumento e operacionalização das variáveis'}
+
+grViz("
+      digraph box_and_circles {
+      
+      node [shape = square]
+      
+      'Variável Dependente: \nAutoritarismo'-> 'Desprezo ao Congresso, \nSTF e apoio à \nintervenção militar \n(índice)'
+      'Desprezo ao Congresso, \nSTF e apoio à \nintervenção militar \n(índice)' -> 'Survey LAPOP de \nOpinião Pública \n(operacionalização)'
+      
+     'Variável Dependente: \nAutoritarismo' ->  'Variáveis Independentes: \nDireita/Conservador \nReligião + Frequência \nAvanços Sociais \n(Gênero e Sexualidade)'
+      
+      'Variáveis Independentes: \nDireita/Conservador \nReligião + Frequência \nAvanços Sociais \n(Gênero e Sexualidade)' -> 'Survey LAPOP de \nOpinião Pública \n(operacionalização)'
+      
+      }", height =  400, width=300)
+
+```
+
+### Método
+
+Para testar as hipóteses, serão rodados três modelos de regressão bivariada e uma quarta multivariada. A escolha da regressão se justifica pelo objetivo principal do trabalho: identificar o que impacta na leniência ao autoritarismo, ou seja, quais fatores são mais importantes e não podem ser ignorados. Os pressupostos das regressões para cada modelo podem ser encontrados ao final, na seção de anexos. Porém, antes dos resultados em si, é necessária uma exploração descritiva da base de dados, com foco nas variáveis de interesse.
+
+## Análise Exploratória Descritiva
+
+Nesta seção iremos realizar uma descrição dos dados da base do LAPOP a partir das variáveis independentes da presente pesquisa. Em seguida, abordaremos as descrições da variável dependente com as independentes para que posteriormente possamos rodar os modelos de regressão.
+
+### Ideologia
+
+No Brasil, a maioria das pessoas se posicionam ao centro do espectro ideológico, mas, em comparação com os dois eixos extremos, a direita é mais volumosa, como observado na figura 3.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Religião dos respondentes (2019)'}
+
+attach(dicotom)
+nomes_dicotom <- data.frame(q3cn = factor(q3cn, labels = c("Católico", "Protestante, Protestante Tradicional ou \nEvangélica não pentecostal", 
+                                                      "Não Cristão", "Nenhuma", "Evangélica Pentecostal", 
+                                                      "Religiões Tradicionais \nou nativas",
+                                                      "Agnóstico ou \nateu", "Outra", "Espírita \nKardecista")),
+                       q5a = factor(q5a, labels = c('Mais de uma vez \npor semana',
+                                                    'Uma vez por \nsemana',
+                                                    'Uma vez por \nmês', 'Uma ou duas vezes \nao ano',
+                                                    'Nunca ou quase \nnunca')),
+                       w14a = factor(w14a, labels = c("Sim, se \njustifica", "Não, não se \njustifica")),
+                       d6 = factor(d6, labels = c("Desaprova \nfortemente", "2", "3", "4",
+                                                  "5", "6", '7', '8', '9', 'Aprova \nfortemente')),
+                       l1 = factor(l1, labels = c('Esquerda', '2', '3', '4', "5", "6", "7", "8", "9", "Direita")))
+
+nomes_dicotom %>% 
+  ggplot() +
+  geom_bar(aes(x=l1, fill=l1)) +
+  theme(axis.text.x=element_text(angle = -45, hjust = 0)) +
+  theme(axis.title.x = element_blank()) +
+  ggtitle("Como você se situa na escala ideológica?") +
+  labs(caption = "Fonte: elaboração do autor com base nos dados do LAPOP",
+       x= "Ideologia",
+       y="N") +
+  theme(legend.position="none")
+
+```
+
+
+### Religião
+
+Como ressaltado, existem duas questões de interesse para este trabalho, qual a religião do entrevistado e com que frequência vai a cultos ou missas. Os dados mostram que os católicos ainda predominam em quantidade no Brasil (figura 4) seguidos dos evangélicos pentecostais  e protestantes, sendo, portanto, a maioria cristã.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Religião dos respondentes (2019)'}
+
+nomes_dicotom %>% 
+  ggplot(aes(x=reorder(factor(q3cn), q3cn, function(x) length(x)))) +
+  geom_bar(aes(fill=q3cn)) +
+  theme(axis.text.x=element_text(angle = -45, hjust = 0)) +
+  theme(axis.title.x = element_blank()) +
+  ggtitle("Qual a sua religião?") +
+  labs(caption = "Fonte: elaboração do autor com base nos dados do LAPOP",
+       x= "Religião",
+       y="N") +
+  theme(legend.position="none")
+
+```
+
+
+Sobre a frequência aos cultos ou missas religiosas, é possível observar na figura 5 que os católicos são mais divididos em proporção na ida às missas, eles podem ir às missas uma vez por mês ou uma vez por semana, enquanto que os evangélicos, no geral, vão mais de uma vez por semana. As pessoas das outras religiões são mais dispersas em relação às idas aos cultos.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Frequência aos cultos ou missas por religião (2019)'}
+
+ggplot(nomes_dicotom, aes(x=q3cn, y=q5a)) + 
+  geom_jitter(size=1.5, aes(col=q5a)) + 
+  geom_segment(aes(x=q3cn, 
+                   xend=q3cn, 
+                   y=0, 
+                   yend=q5a)) + 
+  labs(title="Freqência aos cultos ou missas por religião", 
+       caption="Fonte: elaboração do autor com base nos dados do LAPOP",
+       x="Religião",
+       y="Frequência") +
+  theme(legend.position="none") +
+  theme(axis.text.x = element_text(angle=90, vjust=0.6))
+
+```
+
+Quando divididos por ideologia, podemos notar que não há um padrão ou uma tendência de pessoas concentradas em um lado do espectro, mas estão espalhadas, como indica a figura 6, e, em termos absolutos, evangélicos e católicos se posicionam mais à direita.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Religião por Ideologia (2019)'}
+
+ggplot(nomes_dicotom, aes(x=q3cn, y=q5a)) + 
+  geom_jitter(size=1.5, aes(col=q5a)) + 
+  geom_segment(aes(x=q3cn, 
+                   xend=q3cn, 
+                   y=0, 
+                   yend=q5a)) + 
+  labs(title="Freqência aos cultos ou missas por religião", 
+       caption="Fonte: elaboração do autor com base nos dados do LAPOP",
+       x="Ideologia",
+       y="Religião") +
+  theme(legend.position="none") +
+  theme(axis.text.x = element_text(angle=90, vjust=0.6))
+
+```
+
+### Avanços Sociais
+
+### Aborto
+
+Notadamente na figura 7, a maioria das pessoas concorda que, se a mãe está em uma gravidez de risco, então é justificável que ela possa interromper a gravidez, ou seja, realizar um aborto. Menos da metade dos entrevistados não concordam que o aborto deve ocorrer neste caso.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Resposta ao aborto quando a mãe está em risco (2019)'}
+### Avanços sociais
+#### Aborto
+
+# código: W14A
+nomes_dicotom %>% 
+  ggplot(aes(x=reorder(factor(w14a), w14a, function(x) length(x)))) +
+  geom_bar(aes(fill=w14a)) +
+  theme(axis.text.x=element_text(angle = -45, hjust = 0)) +
+  theme(axis.title.x = element_blank()) +
+  ggtitle("O aborto se justifica quando a mãe está em perigo?") +
+  labs(caption = "Fonte: elaboração do autor com base nos dados do LAPOP",
+       x= "Resposta",
+       y="N") +
+  theme(legend.position="none")
+```
+
+Ao estratificar estes dados por religião e frequência, a tendência segue a mesma. A maioria dos grupos, mesmo os que vão mais aos cultos ou missas, tendem a concordar que é justificável a interrupção da gravidez nos casos nos quais a mãe corre perigo. Em especial, entretanto, os evangélicos neopentecostais que vão aos cultos mais de uma vez por semana parecem ser o grupo mais dividido a respeito desta resposta, como é possível observar na figura 8.
+
+```{r echo=FALSE, fig.height=10, fig.width=10, message=FALSE, warning=FALSE, fig.cap='Aborto por religião e frequência (2019)'}
+ggplot(nomes_dicotom, aes(x=w14a, y=q3cn)) + 
+  geom_jitter(size=1.5, aes(col=q3cn)) + 
+  geom_segment(aes(x=w14a, 
+                   xend=w14a, 
+                   y=0, 
+                   yend=q3cn)) + 
+  labs(title="Aborto justificável por religião e frequência", 
+       caption="Fonte: elaboração do autor com base nos dados do LAPOP",
+       x="Aborto justificável quando a mãe está em perigo",
+       y="Religião") +
+  theme(legend.position="none") +
+  theme(axis.text.x = element_text(angle=90, vjust=0.6)) +
+  facet_wrap(~q5a)
+
+```
+
+Quanto à ideologia, a figura 9 indica que as pessoas que a maioria das pessoas que não acham justificável um aborto quando a mãe está em risco, tendem a ser da direita. Por outro lado, o número também é grande quando estas pessoas escolhem a outra opção. 
+
+```{r echo=FALSE, fig.height=10, fig.width=10, message=FALSE, warning=FALSE, fig.cap='Aborto por Ideologia (2019)'}
+
+ggplot(nomes_dicotom, aes(x=l1, y=w14a)) + 
+  geom_jitter(size=1.5, aes(col=w14a)) + 
+  geom_segment(aes(x=l1, 
+                   xend=l1, 
+                   y=0, 
+                   yend=w14a)) + 
+  labs(title="Ideologia x Aborto", 
+       caption="Fonte: elaboração do autor com base nos dados do LAPOP",
+       x="Ideologia",
+       y="Aborto") +
+  theme(legend.position="none") +
+  theme(axis.text.x = element_text(angle=90, vjust=0.6))
+
+```
+
+### Casamento Homossexual
+
+Sobre a outra questão referente à "negação aos avanços de direitos", a população brasileira é bastante dividida quanto a aceitação de que casais homossexuais tenham o direito de se casar. Como é possível notar na figura 10, a quantidade de pessoas que *desaprovam fortemente* é muito próxima a quem *aprova fortemente* a união civil de pessoas do mesmo sexo.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Respostas ao direito do casamento homoafetivo (2019)'}
+
+nomes_dicotom %>% 
+  ggplot() +
+  geom_bar(aes(x=d6, fill=d6)) +
+  theme(axis.text.x=element_text(angle = -45, hjust = 0)) +
+  theme(axis.title.x = element_blank()) +
+  ggtitle("Casais homossexuais devem ter o direito de se casar?") +
+  labs(caption = "Fonte: elaboração do autor com base nos dados do LAPOP",
+       x= "Resposta",
+       y="N") +
+  theme(legend.position="none")
+
+```
+
+A tendência, nesse caso, é que as pessoas cristãs desaprovem mais este direito que as outras religiões. Na figura 11 é possível observar que Católicos, Evangélicos e Protestantes caminham mais nas respostas de 1 a 10, contudo é mais provável que escolham a primeira opção, principalmente quando frequentam mais os cultos ou missas.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=10, fig.width=10, fig.cap='Casamento homoafetivo por religião e frequência (2019)'}
+
+ggplot(nomes_dicotom, aes(x=d6, y=q3cn)) + 
+  geom_jitter(size=1.5, aes(col=q3cn)) + 
+  geom_segment(aes(x=d6, 
+                   xend=d6, 
+                   y=0, 
+                   yend=q3cn)) + 
+  labs(title="Direito ao casamento homossexual por religião e frequência", 
+       caption="Fonte: elaboração do autor com base nos dados do LAPOP",
+       x="Resposta ao direito do casamento homossexual",
+       y="Religião") +
+  theme(legend.position="none") +
+  theme(axis.text.x = element_text(angle=90, vjust=0.6)) +
+  facet_wrap(~q5a)
+
+```
+
+Assim como as respostas sobre o aborto, em termos ideológicos, as pessoas estão mais espalhadas que concentradas na aprovação ou não do casamento homoafetivo. Na figura 12 é possível notar que as opiniões são dispersas em ambos os extremos do espectro ideológico.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=10, fig.width=10, fig.cap='Casamento homoafetivo por ideologia (2019)'}
+
+ggplot(nomes_dicotom, aes(x=l1, y=d6)) + 
+  geom_jitter(size=1.5, aes(col=d6)) + 
+  geom_segment(aes(x=l1, 
+                   xend=l1, 
+                   y=0, 
+                   yend=d6)) + 
+  labs(title="Ideologia x Casamento Homoafetivo", 
+       caption="Fonte: elaboração do autor com base nos dados do LAPOP",
+       x="Religião",
+       y="Casamento Homoafetivo") +
+  theme(legend.position="none") +
+  theme(axis.text.x = element_text(angle=90, vjust=0.6))
+
+```
+
+### Autoritarismo
+
+Como abordado anteriormente, esta variável parte do somatório de quatro perguntas. A figura 13 está dividida nestas quatro questões e, a partir dela, é possível identificar que a maioria dos brasileiros não concorda que ocorra a intervenção militar quando os índices de crime e corrupção estejam elevados, nem quando, em dificuldades, o presidente feche o Congresso ou o STF. Mas, ainda assim, uma parcela acha justificável que estas decisões ocorram a partir das circunstâncias apresentadas. Portanto, identificar o que motiva estas pessoas a apoiar estes casos é o objetivo principal desta pesquisa.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Variável dependente - Autoritarismo (2019)'}
+
+#### VD
+
+## jc10, jc13, jc15a, jc16a
+
+attach(dicotom)
+vd_nomes <- data.frame(jc10 = factor(jc10, labels = c("Sim, justifica-se", "Não, não se \njustifica")),
+                       jc13 = factor(jc13, labels = c("Sim, justifica-se", "Não, não se \njustifica")),
+                       jc15a = factor(jc15a, labels = c("Sim, justifica-se", "Não, não se \njustifica")),
+                       jc16a = factor(jc16a, labels = c("Sim, justifica-se", "Não, não se \njustifica")))
+
+
+
+##gráfico jc10 - crime
+
+crime_vd <- vd_nomes %>% 
+  ggplot() +
+  geom_bar(aes(x=jc10, fill=jc10)) +
+  theme(axis.text.x=element_text(angle = -45, hjust = 0)) +
+  theme(axis.title.x = element_blank()) +
+  ggtitle("Quando há muito crime?") +
+  labs(x= "Resposta",
+       y="N") +
+  theme(legend.position="none")
+
+## gráfico jc13 - corrupção
+
+corrup_vd <- vd_nomes %>% 
+  ggplot() +
+  geom_bar(aes(x=jc13, fill=jc13)) +
+  theme(axis.text.x=element_text(angle = -45, hjust = 0)) +
+  theme(axis.title.x = element_blank()) +
+  ggtitle("Diante de muita corrupção") +
+  labs(x= "Resposta",
+       y="N") +
+  theme(legend.position="none")
+
+## gráfico jc15a - fechamento do Congresso
+
+congresso_vd <- vd_nomes %>% 
+  ggplot() +
+  geom_bar(aes(x=jc15a, fill=jc15a)) +
+  theme(axis.text.x=element_text(angle = -45, hjust = 0)) +
+  theme(axis.title.x = element_blank()) +
+  ggtitle("Em dificuldades, se justifica que o presidente \nfeche o Congresso?") +
+  labs(x= "Resposta",
+       y="N") +
+  theme(legend.position="none")
+
+
+## gráfico jc16a - fechamento do STF
+
+stf_vd <- vd_nomes %>% 
+  ggplot() +
+  geom_bar(aes(x=jc16a, fill=jc16a)) +
+  theme(axis.text.x=element_text(angle = -45, hjust = 0)) +
+  theme(axis.title.x = element_blank()) +
+  ggtitle("Em dificuldades, se justifica que o presidente \nfeche o STF?") +
+  labs(x= "Resposta",
+       y="N") +
+  theme(legend.position="none")
+
+# juntar
+fig_vd <- ggarrange(crime_vd, corrup_vd, congresso_vd, stf_vd, common.legend = FALSE)
+
+annotate_figure(fig_vd, top = text_grob("Se justificaria que os militares tomem o poder?"), 
+                bottom = text_grob("Fonte: elaboração do autor com base nos dados do LAPOP"))
+
+```
+
+Ao transformar as variáveis em apenas uma, nota-se, na figura 14 uma tendência ao zero (0), que, neste caso, significa uma pessoa *menos autoritária*. Não houve casos nos quais os respondentes alcançaram o quatro (4), que seria o máximo de autoritarismo nesta pesquisa. Desse modo, o índice variou de zero (0) a dois (2).
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+dicotom %>%
+  ggplot( aes(x=vd_autoritarismo)) +
+  geom_density(fill="cyan4", alpha=0.8) +
+  labs(x="Autoritarismo",
+       y="Densidade",
+       title = 'Distribuição da Variável Dependente')
+
+```
+
+
+## Resultados
+
+Para testar as hipóteses serão necessários rodar três modelos a partir das variáveis sobre religião e avanços sociais (negativo). Este último não foi transformado em índice, mas dividido em dois pontos, aborto e casamento homoafetivo. A questão principal levantada aqui é se ser autoritário é uma característica condicionada por esses dois pontos.Acredita-se que a hipótese nula será rejeitada em todas as três hipóteses, visto que a teoria aponta para considerações neste sentido. Os pressupostos das regressões se encontram nos anexos após as referências.
+
+### Modelo 1 - Ideologia
+
+Sendo o valor de corte do p-valor 0,05, para a primeira hipótese, que ser de direita e, portanto, conservador, afeta no apoio ao autoritarismo, o resultado indicou que esta é, de fato, uma variável estatisticamente significativa. Na tabela 3 é possível notar que, de fato, o efeito da ideologia na variável dependente não é nulo, pois o p-valor foi menor que o corte e o R^2 ajustado corresponder a 0,030, valor razoável para os modelos em ciências sociais. Os coeficientes são positivos e é esperado que, à medida que a ideologia aumenta mais à direita, mais autoritária será uma pessoa, como demostra a figura 10 em efeitos marginais. Ou seja, ser mais autoritário implica, de fato, ser mais conservador, como é possível observar também na figura 15 com o gráfico de coeficiente. Os erros padrões são relativamente pequenos, o que indica que o modelo é preciso em informar o que já foi detalhado. Desse modo, a primeira hipótese foi corroborada.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Modelo 1 - Autoritarismo e Ideologia'}
+
+## REGRESSAO
+### HIPÓTESE 1 - direita x autoritarismo
+
+regressao_direita <- lm(vd_autoritarismo ~ l1, data = dicotom)
+
+pander(summary(regressao_direita), caption = 'Resultados da regressão - modelo 1 - ideologia e autoritarismo')
+
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Efeitos marginais e coeficientes do modelo 1 - ideologia x autoritarismo'}
+efeito_marginal_direita <- plot_model(regressao_direita,type = "slope") + labs(x='Ideologia',
+                                                                               y='Autoritarismo', title = 'Efeitos Marginais')
+coef_direita <- coefplot(regressao_direita, parm = -1, 
+                 title = "Coeficientes - Autoritarismo \nx Ideologia", x='Valor',
+                 y='Coeficientes')
+# juntar
+modelo1 <- ggarrange(efeito_marginal_direita, coef_direita, common.legend = FALSE)
+
+annotate_figure(modelo1, top = text_grob("Resultados Modelo 1"), 
+                bottom = text_grob("Fonte: elaboração do autor com base nos dados do LAPOP"))
+
+```
+
+### Modelo 2 - Religião
+
+Em relação à segunda hipótese, de que a religião importa no apoio ao autoritarismo, a hipótese não pode ser corroborada. Na verdade, o teste indicou que, mesmo controlada por frequência, a religião não é um bom preditor para o apoio ao autoritarismo. O p-valor foi alto e os coeficientes baixos, tendendo ao zero (0), como visto na tabela 4 e na figura 11 no gráfico dos coeficientes. Os erros padrões foram mais elevados e o R^2 ajustado menos que o primeiro modelo. A interação entre as três variáveis (dependente, independente e de controle) neste modelo indicam, na figura 16, que mostra grande dispersão da variável independente (religião). 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+## REGRESSAO
+### HIPÓTESE 2 - religiao x autoritarismo
+regressao_religiao <- lm(vd_autoritarismo ~ q3cn, controls = q5a, data = dicotom)
+pander(summary(regressao_religiao), caption = 'Resultados da regressão - modelo 2 - religião e autoritarismo')
+
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Coeficientes do modelo 2 - religião x autoritarismo'}
+coefplot(regressao_religiao, parm = -1, 
+                         title = "Coeficientes - Autoritarismo x Religiao", x='Valor',
+                         y='Coeficientes')
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Interações do modelo 2 - religião x autoritarismo'}
+ggplot(nomes_dicotom, aes(q3cn, vd_autoritarismo, color = interaction(q5a))) +
+  geom_smooth(formula = y~x, method="lm") +
+  geom_jitter()  +
+  theme(axis.text.x=element_text(angle = -45, hjust = 0)) +
+  theme(legend.position="left") +
+  labs(x='Religião',
+       y='Autoritarismo',
+       color='Interação (frequência)')
+```
+
+### Modelo 3 - Negação dos Avanços Sociais
+
+Para a última hipótese, espera-se que pessoas que apoiem o autoritarismo tendam a desaprovar o casamento entre pessoas do mesmo sexo e também a interrupção da gravidez mesmo com a mãe estando em risco. Para a primeira, de acordo com a tabela 5, é possível observar uma relação negativa entre as variáveis do modelo, que é estatisticamente significativo, pois o p-valor foi menor que 0,05. Isto porque a *aprovação* (na escala de respostas corresponde ao 10) aumenta quando o autoritarismo diminui e, intuitivamente, a *desaprovação* aumenta quando o autoritarismo se eleva, como se nota também no gráfico de efeitos marginais na figura 17 e nos coeficientes do modelo. Por outro lado, os erros padrões foram elevados eo R^2 ajustado foi relativamente baixo, o que significa que é provável que este modelo não seja bom preditor quanto o primeiro (sobre ideologia).
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, }
+## hipótese 3 - casamento homoafetivo - avanços sociais
+regressao_homo <- lm(vd_autoritarismo ~ d6, data = dicotom)
+
+pander(summary(regressao_homo), caption = 'Resultados da regressão - modelo 3 - casamento homoafetivo e autoritarismo')
+
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Efeitos marginais e coeficientes do modelo 3 - avanços sociais (casamento homoafetivo) x autoritarismo'}
+efeito_marginal_homo <- plot_model(regressao_homo,type = "slope") + labs(x='Ideologia',
+                                                                               y='Autoritarismo', title = 'Efeitos Marginais')
+coef_homo <- coefplot(regressao_homo, parm = -1, 
+                 title = "Coeficientes - Autoritarismo \nx Casamento Homoafetivo", x='Valor',
+                 y='Coeficientes')
+# juntar
+modelo3 <- ggarrange(efeito_marginal_homo, coef_homo, common.legend = FALSE)
+
+annotate_figure(modelo3, top = text_grob("Resultados Modelo 2"), 
+                bottom = text_grob("Fonte: elaboração do autor com base nos dados do LAPOP"))
+
+```
+
+Quanto ao outro ponto da negação aos avanços sociais a respeito da interrupção da gravidez nos casos nos quais a mãe corre riscos de vida, o teste estatístico não indicou significância, pois o p-valor foi maior que 0,05, como detalhado na tabela 6; além disso, o R^2 ajustado é negativo, o que indica que este modelo é pouco adequado. Entretanto, se considerarmos outros valores da regressão, é possível notar que os erros padrões são baixos e os coeficientes, observamos que o autoritarismo tem um aumento relativo quando as pessoas não consideram justificável o aborto mesmo com a mãe em risco, como mostra a figura 18 nos efeitos marginais. Os coeficientes também seguem essa tendência.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#### ABORTO
+
+regressao_aborto <- lm(vd_autoritarismo ~ w14a, data = dicotom)
+
+pander(summary(regressao_aborto), caption = 'Resultados da regressão - modelo 3 - aborto e autoritarismo')
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Efeitos marginais e coeficientes do modelo 3 - avanços sociais (aborto) x autoritarismo'}
+aborto_margin <- plot_model(regressao_aborto,type = "slope") + 
+  labs(x='Aborto', y='Autoritarismo')
+
+aborto_coef <- coefplot(regressao_aborto, title = "Coeficientes - Autoritarismo \nx Aborto", x='Valor',
+                 y='Coeficientes')
+
+# juntar
+modelo32 <- ggarrange(aborto_margin, aborto_coef, common.legend = FALSE)
+
+annotate_figure(modelo32, top = text_grob("Resultados Modelo 3 - Aborto"), 
+                bottom = text_grob("Fonte: elaboração do autor com base nos dados do LAPOP"))
+
+```
+
+### Modelo único
+
+Para testar a adequação do modelo completo, iremos rodar uma última regressão. Isso é importante porque iremos poder concluir o quanto o modelo explica a questão fundamental da pesquisa. O modelo é estatisticamente significativo, visto que o p-valor é menor que 0,05, como mostra a tabela 7. Além disso, quando as outras variáveis são inclusas no modelo 1, o valor do R^2 ajustado aumenta para 0,037, o que melhora a adequação do modelo.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+toda_regres <- lm(vd_autoritarismo ~ l1 + q3cn + d6 + w14a, data = dicotom)
+
+pander(summary(toda_regres), caption = 'Modelo teórico completo')
+
+```
+
+Sendo variável dependente do modelo é ordinal, as linhas residuais na figura 19 aparecem como paralelas, o que dificulta a detecção de resíduos. Elas indicam que existem três possibilidade de respostas sobre o autoritarismo. O Normal Q-Q mostra a concentração dos valores ao longo da distribuição dos casos da variável dependente e é, bimodal, pois se concentra em mais de um local de resposta. O terceiro gráfico indica que o pressuposto da homocedasticidade não foi satisfeito porque os resíduos não são iguais nos valores ajustados da regressão. Por fim, o *Cook's Distance* indicam que existem três observações a serem consideradas como possíveis *outliers*.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Regressão modelo teórico completo'}
+
+par(mfrow = c(2,2))
+plot(toda_regres, which=c(1:4), pch = 20)
+
+```
+
+## Conclusões e Implicações
+
+O avanço de governos autoritários em democracias é um tópico latente na Ciência Política atual. Donald Trump, Viktor Orbán e Jair Bolsonaro são exemplos da ascensão desses governos. Contudo, em democracias representativas, como a brasileira, necessitamos entender também se o eleitorado está, de fato, alinhado com as perspectivas do lado da oferta, ou seja, dos políticos. Desse modo, a presente pesquisa contribui para preencher esta lacuna e busca identificar o que motiva as pessoas a votarem em líderes autoritários.
+
+Através da utilização do método quantitativo por intermédio de uma base de dados sobre opinião pública, o LAPOP, este trabalho identificou que pessoas conservadoras e de direita são mais propensas a apoiar características autoritárias, medidas aqui por quatro pilares: apoio ao golpe militar quando o crime e a corrupção estão em alta no país, apoio ao fechamento do Congresso Nacional e do Supremo Tribunal Federal quando o presidente está encontrando dificuldades em executar seu governo. Em termos descritivos, a maioria das pessoas entrevistadas se opõe a tais pontos, mas uma pequena parcela ainda concorda que tais questões são justificáveis. Estatisticamente, esta parcela apresenta uma tendência à direita (e, portanto, conservadora) e, provavelmente negam avanços sociais, especialmente no tange ao gênero e à sexualidade. Apesar da teoria apontar fortemente que o fator religioso contribui bastante para ser autoritário, nesta pesquisa isso não foi concretizado. 
+
+Outras variáveis podem ser estudadas para os objetivos deste trabalho, que é entender como opiniões autoritárias são formadas. Alguns pesquisadores apontam que o tipo de mídia consumida pelas pessoas pode influenciar tais comportamentos. Obter informações diretamente das redes sociais dos políticos, sem observar outros meios de notícias, pode ser uma variável importante para ter uma opinião autoritária. Tal ponto não foi abordado aqui porque os dados observados nesta pesquisa são de *survey* e, apesar de apresentar algumas perguntas de interesse sobre este tópico, são questões bastante gerais. Desse modo, é válido que trabalhos futuros consigam identificar se isto se concretiza por meio de outras abordagens metodológicas. Além desta, o trabalho abre espaço para que outras pesquisas sejam feitas e que outras variáveis sejam incluídas de modo a testar o que contribui para que as opiniões autoritárias se formem.
+
+## Referências
+
+BARRY, N. P. The New Right. [s.l.] Routledge, 2019. 
+
+CAETANO, M. A. L. Political activity in social media induces forest fires in the Brazilian Amazon. Technological Forecasting and Social Change, v. 167, p. 120676, 2021. 
+
+CAMUS, J.-Y. Alain de Benoist and the New Right. In: Key Thinkers of the Radical Right. New York: Oxford University Press, 2019. 
+
+COPPEDGE, M. A Classification of Latin American Political Parties. 1997. 
+
+EVANS, G.; HEATH, A.; LALLJEE, M. Measuring Left-Right and Libertarian-Authoritarian Values in the British Electorate. The British Journal of Sociology, v. 47, n. 1, p. 93–112, 1996. 
+
+FERREIRA, G. G. Conservadorismo, fortalecimento da extrema-direita e a agenda da diversidade sexual e de gênero no Brasil contemporâneo. Lutas Sociais, v. 20, n. 36, p. 166–178, 2016. 
+
+HADIZ, V. R. Islamic populism and the politics of neoliberal inequalities. In: Routledge Handbook of Global Populism. [s.l.] Routledge, 2018. 
+
+JOHANSEN, A. Soldiers as Police: The French and Prussian Armies and the Policing of Popular Protest, 1889914. [s.l.] Routledge, 2017. 
+
+JOST, J. T.; FEDERICO, C. M.; NAPIER, J. L. Political ideology: its structure, functions, and elective affinities. Annual Review of Psychology, v. 60, p. 307–337, 2009. 
+
+LOWNDES, J. E. From the New Deal to the New Right. [s.l.] Yale University Press, 2008. 
+
+MAINWARING, S. (ED.). Party Systems in Latin America: Institutionalization, Decay, and Collapse. Cambridge: Cambridge University Press, 2018. 
+
+NORRIS, P.; LECTURER, M. Radical Right: Voters and Parties in the Electoral Market. [s.l.] Cambridge University Press, 2005. 
+
+PETCHESKY, R. P. Antiabortion, Antifeminism, and the Rise of the New Right. Feminist Studies, v. 7, n. 2, p. 206–246, 1981. 
+
+SANTOS, F.; TANSCHEIT, T. Quando velhos atores saem de cena: a ascensão da nova direita política no Brasil. Colombia Internacional, 2019. 
+
+SCHIBELINSKI, D. “Isso é coisa do capeta!”: o papel da “ideologia de gênero” no atual projeto político de poder. Retratos da Escola, v. 14, n. 28, p. 15–38, 2020. 
+
+SCHUMPETER, J. A., 1883-1950. Capitalism, socialism, and democracy. [s.l.] Third edition. New York: Harper & Row, 1962. ©1950, 1962. 
+
+SHLEIFER, A.; VISHNY, R. Corruption. Quarterly Journal of Economics, v. 108, n. 3, p. 599–617, 1993. 
+
+STOCKMANN, D.; LUO, T.; SHEN, M. Designing authoritarian deliberation: how social media platforms influence political talk in China. Democratization, v. 27, n. 2, p. 243–264, 17 fev. 2020. 
+
+STOKES, S. C. Perverse Accountability: A Formal Model of Machine Politics with Evidence from Argentina. American Political Science Review, v. 99, n. 3, p. 315–325, 2005. 
+
+TORRE, C. DE LA (ED.). Routledge Handbook of Global Populism. London: Routledge, 2018. 
+
+TORRES, T. J. F.; JÚNIOR, A. R. DE S.; BRAZIL, V. T. F. As características e os impactos da narrativa de Jair Messias Bolsonaro. Boletim de Conjuntura (BOCA), v. 5, n. 15, p. 01–14, 2021. 
+
+TREMBLAY, Q. Queering Representation. [s.l.] UBC Press, 2019. 
+
+WODAK, R.; KHOSRAVINIK, M.; MRAL, B. Right-Wing Populism in Europe: Politics and Discourse. [s.l.] Bloomsbury Publishing, 2013. 
+
+\newpage
+
+## Apêndice A - Pressupostos dos Modelos de Regressão
+
+### Modelo 1 - Ideologia
+
+*Linearidade*
+
+O gráfico de resíduos (figura 20 *residuals vs fitted*) indica linearidade do modelo, pois que a linha vermelha é horizontal e próxima ao zero. Este pressuposto está, portanto, satisfeito.
+
+*Homocedasticidade*
+
+O terceiro gráfico da figura 20, *scale-location*, exibe os valores preditos das variáveis do modelo. A disposição dos dados está em acordo com a natureza categórica dos mesmos, e a linha categórica segue um padrão claro, o que significa que este pressuposto está satisfeito.
+
+*Normalidade dos resíduos*
+
+Os pontos estão próximos à linha diagonal, mas espalhados como uma relação bimodal, como mostra a figura 20, com o gráfico *normal q-q*. Os pontos se afastam pouco da linha tracejada, indicando um padrão, o que pode indicar que este pressuposto foi satisfeito.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Regressão - Pressupostos Modelo 1'}
+
+par(mfrow = c(2,2))
+plot(regressao_direita, which=c(1:4), pch = 20)
+
+```
+
+*Autocorrelação entre os resíduos*
+
+As linhas do gráfico da figura 21 se encontram dentro do tracejado azul, com exceção da primeira, o que significa que este pressuposto está satisfeito.
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Regressão - Pressupostos Modelo 1 - Autocorrelação'}
+
+acf(regressao_direita$residuals)
+
+```
+
+### Modelo 2 - Religião
+
+*Linearidade*
+
+O gráfico de resíduos (figura 22 *residuals vs fitted*) indica linearidade do modelo, uma vez que a linha vermelha é horizontal e próxima ao zero, ou seja, este pressuposto está satisfeito.
+
+*Homocedasticidade*
+
+O terceiro gráfico da figura 22, *scale-location*, exibe os valores preditos das variáveis do modelo. A disposição dos dados está em acordo com a natureza categórica dos mesmos, e a linha categórica segue um padrão claro, o que significa que este pressuposto está satisfeito.
+
+*Normalidade dos resíduos*
+
+Os pontos estão próximos à linha diagonal, mas espalhados como uma relação bimodal, como mostra a figura 22, com o gráfico *normal q-q*. Os pontos se afastam muito da linha tracejada, o que pode indicar que este pressuposto não foi satisfeito.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Regressão - Pressupostos Modelo 2'}
+
+par(mfrow = c(2,2))
+plot(regressao_religiao, which=c(1:4), pch = 20)
+
+```
+
+*Autocorrelação entre os resíduos*
+
+As linhas do gráfico da figura 23 se encontram dentro do tracejado azul, com exceção da primeira, o que significa que este pressuposto está satisfeito.
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Regressão - Pressupostos Modelo 2 - Autocorrelação'}
+
+acf(regressao_religiao$residuals)
+
+```
+
+### Modelo 3 - Avanços Sociais
+
+**Casamento Homoafetivo**
+
+*Linearidade*
+
+O gráfico de resíduos na figura 24, *residuals vs fitted*, indica a linearidade do modelo. Sendo a linha vermelha horizontal e próxima ao zero, o teste mostra que este pressuposto está satisfeito.
+
+*Homocedasticidade*
+
+O terceiro gráfico da figura 24, *scale-location*, indica que o pressuposto da homocedasticidade está satisfeito.
+
+*Normalidade dos resíduos*
+
+Os pontos estão próximos à linha diagonal e espalhados, como mostra a figura 24, com o gráfico *normal q-q*. Os pontos se afastam da linha tracejada, mas tendem ao centro da linha, o que pode indicar que este pressuposto foi satisfeito.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Regressão - Pressupostos Modelo 3 (Casamento Homoafetivo)'}
+
+par(mfrow = c(2,2))
+plot(regressao_religiao, which=c(1:4), pch = 20)
+
+```
+
+*Autocorrelação entre os resíduos*
+
+As linhas do gráfico da figura 25 se encontram dentro do tracejado azul, com exceção da primeira, o que significa que este pressuposto está satisfeito.
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Regressão - Pressupostos Modelo 3 (Casamento) - Autocorrelação'}
+
+acf(regressao_homo$residuals)
+
+```
+
+**Aborto**
+
+*Linearidade*
+
+O gráfico de resíduos na figura 26, *residuals vs fitted*, indica a linearidade do modelo. Sendo a linha vermelha horizontal e próxima ao zero, o teste mostra que este pressuposto está satisfeito.
+
+*Homocedasticidade*
+
+O terceiro gráfico da figura 26, *scale-location*, indica que o pressuposto da homocedasticidade está satisfeito.
+
+*Normalidade dos resíduos*
+
+Os pontos estão próximos à linha diagonal e espalhados, como mostra a figura 26, com o gráfico *normal q-q*. Os pontos se afastam da linha tracejada, e não tendem ao centro da linha, o que pode indicar que este pressuposto não foi satisfeito.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Regressão - Pressupostos Modelo 3 (Aborto)'}
+
+par(mfrow = c(2,2))
+plot(regressao_aborto, which=c(1:4), pch = 20)
+
+```
+
+*Autocorrelação entre os resíduos*
+
+As linhas do gráfico da figura 27 se encontram dentro do tracejado azul, com exceção da primeira, o que significa que este pressuposto está satisfeito.
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Regressão - Pressupostos Modelo 3 (Aborto) - Autocorrelação'}
+
+acf(regressao_aborto$residuals)
+
+```
+
+### Modelo 4 - Completo
+
+Como indicado ao fim da última seção dos resultados, os pressupostos do modelo parecem estar satisfeitos, uma vez que indicam que há linearidade, normalidade e homocedasticidade. O pressuposto da autocorrelação dos resíduos também se faz verdade, como indicado na figura 28.
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Regressão - Pressupostos Modelo 4 - Autocorrelação'}
+
+acf(regressao_aborto$residuals)
+
+```
